@@ -1,0 +1,23 @@
+{
+  "name": "komohua",
+  "description": "Add buttons to HTML input and textareas to insert Hawaiian (or other) characters or text.",
+  "keywords": [
+    "hawaiian",
+    "keyboard",
+    "insert",
+    "language"
+  ],
+  "authors": [
+    {
+      "name": "Sunny Walker",
+      "homepage": "http://www.miraclesalad.com/"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/sunnywalker/komohua",
+  "version": "1.0.0",
+  "main": "Komohua.js",
+  "ignore": [
+    "**/.*"
+  ]
+}

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Komohua JS</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+    <style>
+        /* page styling for the demo--not needed for the plugin */
+        *, *:after, *:before { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+        body, html { font-size: 1.1rem; padding: 0; margin: 0; font-family: serif; -webkit-font-smoothing: antialiased; color: #222; background-color: #fbfaf7; }
+        header { background-color: #c00; background-image: -webkit-linear-gradient(top, #c00, #600); background-image: linear-gradient(top, #c00, #600); color: white; text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5); padding: 0.5em 0; }
+        header h1 { margin: 0; padding: 0; }
+        header p { margin-top: 0; padding-top: 0; font-style: italic; }
+        .container > div { max-width: 40em; margin: 0 auto; }
+        main { margin-bottom: 2em; }
+        h2 { border: 1px solid #444; border-width: 1px 0; margin: 3em 0 1em 0; padding: 0.5em 0; text-align: center; font-family: sans-serif; }
+        label { font-family: sans-serif; }
+        input, textarea { font-family: inherit; font-size: inherit; }
+        textarea { width: 100%; }
+        .notice { color: #f63; font-size: 1.3em; }
+        .info { font-size: 1.2em; }
+        pre, code { font-family: Menlo, Consolas, monospace; background-color: white; border: 1px solid #ccc; padding: 0.5rem; border-radius: 3px; white-space: pre-wrap; }
+        code { padding: 0 0.25rem; }
+        table { border-collapse: collapse; border: 1px solid #ccc; }
+        th, td { border: 1px solid #eee; padding: 5px; }
+        th { background-color: #eee; }
+        img { max-width: 100%; height: auto; }
+        @media screen and (max-width: 30em) {
+            .container > div { padding-left: 4px; padding-right: 4px; }
+        }
+
+        /* sample styling for the plugin's elements -- modify to your taste */
+        .komohua-container.before {
+            margin-bottom: 0.5rem;
+        }
+        .komohua-container.before button {
+            margin-right: 0.25em;
+        }
+        .komohua-container.after button {
+            margin-left: 0.25em;
+        }
+
+        .demo2 .komohua-injector, .demo2 .komohua-helper {
+            background-color: #eee;
+            background-image: -webkit-radial-gradient(center 25%, circle cover, #f8f8f8, #eee);
+            background-image: radial-gradient(center 25%, circle cover, #f8f8f8, #eee);
+            border-color: #ddd;
+            border-radius: 3px;
+            border-style: solid;
+            border-width: 1px 1px 2px 1px;
+            color: #222;
+            cursor: pointer;
+            display: inline-block;
+            font-size: 1.5em;
+            line-height: 1.2;
+            min-width: 1.5em;
+            padding: 2px 4px;
+            text-align: center;
+        }
+        .demo2 .komohua-injector:hover, .demo2 .komohua-injector:focus, .demo2 .komohua-helper:hover, .demo2 .komohua-helper:focus {
+            background-color: #ff0;
+            background-image: -webkit-radial-gradient(center 25%, circle cover, #ffe, #ff6);
+            background-image: radial-gradient(center 25%, circle cover, #ffe, #ff6);
+            border-color: #c10202;
+        }
+    </style>
+</head>
+<body>
+<header class="container">
+    <div>
+        <h1>Komohua JS</h1>
+        <p>Add inline buttons for inserting text into HTML inputs and textareas.</p>
+    </div>
+</header>
+<main class="container">
+    <div>
+        <p class="info">Komohua is a vanilla JavaScript library to add Hawaiian (or other) character injector buttons to
+            HTML input and textareas, along with optional helper functions. <strong>Note that many fonts do not support
+                the full range of Hawaiian letters, particularly the ʻokina.</strong></p>
+        <p><img src="https://i.imgur.com/PBWLEYG.gif" alt="animated demo" width="640" height="55"></p>
+
+        <h2>Download</h2>
+        <p><a href="https://github.com/sunnywalker/Komohua">Komohua on GitHub</a></p>
+
+        <div class="demo1">
+            <h2>Sample Basic Usage</h2>
+            <script>(function () {
+                var i = document.createElement('textarea');
+                if (typeof i.selectionStart !== 'number') {
+                    document.write('<p class="notice">This browser does not have the capabilities necessary for this plugin.</p>');
+                }
+            })();</script>
+            <pre>let demo1 = new Komohua('#input');</pre>
+            <p>
+                <label for="input">Input:</label>
+                <input type="text" size="20" id="input" autocorrect="off">
+            </p>
+        </div>
+
+        <div class="demo2">
+            <h2>Sample with Additional Options and Styling</h2>
+            <pre>let demo2 = new Komohua('#textarea', {
+  items: ['😷', '🤙🏾', '💯', 'Yes', 'No'],
+  containerBeforeInput: true,
+  containerTag: 'div'
+});</pre>
+            <p>
+                <label for="textarea">Textarea:</label>
+                <textarea id="textarea" rows="4" autocorrect="off"></textarea>
+            </p>
+        </div>
+
+        <div class="demo3">
+            <h2>Adding a Helper</h2>
+            <p>Create buttons with extra functionality via helpers. See <a href="#helpers">Making Your Own Helpers</a>
+                for more info.</p>
+            <pre>let demo3 = new Komohua('#input-with-helper', {
+  helpers: [ KomohuaConvertToOkina ]
+});</pre>
+            <p>
+                <label for="input-with-helper">Input:</label>
+                <input type="text" id="input-with-helper" autocorrect="off" value="'Olelo Hawai`i">
+            </p>
+        </div>
+
+        <div class="demo4">
+            <h2>Remove Method</h2>
+            <p>Calling the <code>remove()</code> method on an instance will remove the Komohua functionality from all
+                elements in that instance.</p>
+            <p>
+                <label for="remover">Input:</label>
+                <textarea id="remover" rows="3" autocorrect="off">Press the Remove button to get rid of the injectors.</textarea>
+                <button type="button" id="remover-button">Remove Komohua</button>
+            </p>
+        </div>
+
+
+        <h2>Options</h2>
+        <p>In the following options, the <strong>container</strong> refers to the element which holds all of the
+            injector and helper buttons.</p>
+        <table>
+            <thead>
+            <tr>
+                <th>Option</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><code>containerClass</code></td>
+                <td>string</td>
+                <td>'injectors'</td>
+                <td>The (single) class for each injectors container</td>
+            </tr>
+            <tr>
+                <td><code>containerBeforeInput</code></td>
+                <td>boolean</td>
+                <td>false</td>
+                <td>Put the injectors container before the input? It's placed after the input if not true.</td>
+            </tr>
+            <tr>
+                <td><code>containerTag</code></td>
+                <td>string</td>
+                <td>'span'</td>
+                <td>Use this HTML tag for building the container.</td>
+            </tr>
+            <tr>
+                <td><code>helpers</code></td>
+                <td>array</td>
+                <td>[]</td>
+                <td>Array of helper objects. See <a href="#helpers">Making Your Own Helpers</a> for more info.</td>
+            </tr>
+            <tr>
+                <td><code>helperClass</code></td>
+                <td>string</td>
+                <td>'inject-helper'</td>
+                <td>Add this (single) class to each helper button.</td>
+            </tr>
+            <tr>
+                <td><code>injectorClass</code></td>
+                <td>string</td>
+                <td>'inject'</td>
+                <td>Add this (single) class to each injector button.</td>
+            </tr>
+            <tr>
+                <td><code>items</code></td>
+                <td>array</td>
+                <td>['ʻ', 'Ā', 'Ē', 'Ī', 'Ō', 'Ū', 'ā', 'ē', 'ī', 'ō', 'ū']</td>
+                <td>Text for each item to be injected. Items may be more than a single character.</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <h2 id="helpers">Making Your Own Helpers</h2>
+        <p>Each helper must be an object with three properties:</p>
+        <pre>{
+  label: 'Text on the button',
+  tooltip: 'Title attribute of the button',
+  action: function (instance, input, button) {
+    // instance is the komohua instance
+    // input is the input field
+    // button is the helper button that was pressed
+  }
+}</pre>
+        <h3>KomohuaConvertToOkina</h3>
+        <p>There is one pre-defined helper function which converts the following characters to a proper ʻokina
+            character.</p>
+        <ul>
+            <li>back tick: <code>`</code></li>
+            <li>tick: <code>'</code></li>
+            <li>left single quote: <code>‘</code></li>
+            <li>right single quote: <code>’</code></li>
+        </ul>
+        <h3>Built-in Functions</h3>
+        <p>There are two functions which available which may be useful for your helpers.</p>
+        <h4>instance.injectText(input, text)</h4>
+        <p>This inserts the <code>text</code> content into the <code>input</code> field at the insertion point. If there
+            is a selection in the input field, the new text will replace all of the selected text.</p>
+        <h4>instance.replaceText(input, regex_match, replacement)</h4>
+        <p>This uses the <code>regex_match</code> to match and replace text (with the <code>replacement</code>) in the
+            <code>input</code> field. If there is a selection in the input field, the replacement will replace only
+            within the selected text, otherwise it will replace throughout the entire input field contents.</p>
+    </div>
+</main>
+<script src="Komohua.js"></script>
+<script>
+    // demo 1
+    // note h1 is in the selector list but does not get the injectors because it's an invalid element
+    const demo1 = new Komohua('h1,#input');
+
+    // demo 2
+    const demo2 = new Komohua(document.getElementById('textarea'), {
+        items: ['😷', '🤙🏾', '💯', 'Yes', 'No'],
+        containerBeforeInput: true,
+        containerTag: 'div'
+    });
+
+    // demo 3
+    const demo3 = new Komohua('#input-with-helper', {
+        helpers: [KomohuaConvertToOkina]
+    });
+
+    // demo 4
+    const y = new Date().getFullYear();
+    const demo4 = new Komohua('.demo4 textarea', {
+        containerBeforeInput: true,
+        items: [y, y - 1, y - 2]
+    });
+    document.getElementById('remover-button').addEventListener('click', function (ev) {
+        ev.preventDefault();
+        demo4.remove(); // call the remove method on the demo4 instance
+        ev.target.remove(); // remove the remover button
+    });
+</script>
+</body>
+</html>
