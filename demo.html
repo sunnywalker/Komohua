@@ -105,7 +105,9 @@
             <pre>let demo2 = new Komohua('#textarea', {
   items: ['😷', '🤙🏾', '💯', 'Yes', 'No'],
   containerBeforeInput: true,
-  containerTag: 'div'
+  containerTag: 'div',
+  injectorCallbackAfter: (input, text) => console.log('after', input, text),
+  injectorCallbackBefore: (input, text) => { console.log('before', input, text); return true; }
 });</pre>
             <p>
                 <label for="textarea">Textarea:</label>
@@ -237,7 +239,9 @@
     const demo2 = new Komohua(document.getElementById('textarea'), {
         items: ['😷', '🤙🏾', '💯', 'Yes', 'No'],
         containerBeforeInput: true,
-        containerTag: 'div'
+        containerTag: 'div',
+        injectorCallbackAfter: (input, text) => console.log('after', input, text),
+        injectorCallbackBefore: (input, text) => { console.log('before', input, text); return true; }
     });
 
     // demo 3

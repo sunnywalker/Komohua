@@ -23,6 +23,8 @@ const Komohua = function (selector, options = {}) {
     containerTag: 'span', // string: HTML tag name used as the container
     helpers: [], // array: additional buttons as definable helper functions [{label:…,tooltip:…,action:fn()},…]
     helpersClass: 'komohua-helper', // string: the (one) class for helper buttons
+    injectorCallbackAfter: (input, text) => {}, // function: callback after a pressed injector button does its thing
+    injectorCallbackBefore: (input, text) => true, // function: callback before a pressed injector button does its thing. return false to prevent the injection or true to allow it
     injectorClass: 'komohua-injector', // string: the (one) class for injector buttons
     injectorClassExtra: '', // string: any extra classes for injector buttons
     items: 'ʻĀĒĪŌŪāēīōū'.split('') // array: text items to inject
@@ -103,11 +105,16 @@ const Komohua = function (selector, options = {}) {
     // add the container to the DOM
     el.parentNode.insertBefore(container, me.settings.containerBeforeInput ? el : el.nextSibling);
 
-    // add the event handler delegation to the container
+    // add the injector event handler delegation to the container
     container.addEventListener('click', ev => {
       if (ev.target.classList.contains(me.settings.injectorClass)) {
         ev.preventDefault();
-        me.injectText(el, ev.target.textContent);
+        if (!me.settings.injectorCallbackBefore || (typeof me.settings.injectorCallbackBefore === "function" && me.settings.injectorCallbackBefore(el, ev.target.textContent))) {
+          me.injectText(el, ev.target.textContent);
+          if (typeof me.settings.injectorCallbackAfter === "function") {
+            me.settings.injectorCallbackAfter(el, ev.target.textContent);
+          }
+        }
       }
     });
 
