@@ -24,6 +24,7 @@ const Komohua = function (selector, options = {}) {
     helpers: [], // array: additional buttons as definable helper functions [{label:…,tooltip:…,action:fn()},…]
     helpersClass: 'komohua-helper', // string: the (one) class for helper buttons
     injectorClass: 'komohua-injector', // string: the (one) class for injector buttons
+    injectorClassExtra: '', // string: any extra classes for injector buttons
     items: 'ʻĀĒĪŌŪāēīōū'.split('') // array: text items to inject
   };
 
@@ -50,7 +51,8 @@ const Komohua = function (selector, options = {}) {
   const buildInjector = (title, className) => {
     const b = document.createElement('button');
     b.setAttribute('type', 'button');
-    b.classList.add(className);
+    // b.classList.add(className);
+    b.setAttribute('class', className);
     b.textContent = title;
     return b;
   };
@@ -79,7 +81,7 @@ const Komohua = function (selector, options = {}) {
 
     // add the injector buttons to the container
     me.settings.items.forEach(txt => {
-      container.append(buildInjector(txt, me.settings.injectorClass));
+      container.append(buildInjector(txt, (me.settings.injectorClass + ' ' + me.settings.injectorClassExtra).trim()));
     });
 
     // add any helpers to the container
