@@ -19,6 +19,7 @@ const Komohua = function (selector, options = {}) {
   // start off with some default settings
   me.defaults = {
     containerClass: 'komohua-container', // string: the (one) class for the container
+    containerClassExtra: '', // string: an extra classes for the container
     containerBeforeInput: false, // bool: put the container before the input? before if true, after if not true
     containerTag: 'span', // string: HTML tag name used as the container
     helpers: [], // array: additional buttons as definable helper functions [{label:…,tooltip:…,action:fn()},…]
@@ -79,7 +80,7 @@ const Komohua = function (selector, options = {}) {
 
     // build the container
     let container = document.createElement(me.settings.containerTag);
-    container.setAttribute('class', me.settings.containerClass + ' ' + (me.settings.containerBeforeInput ? 'before' : 'after'));
+    container.setAttribute('class', me.settings.containerClass + ' ' + (me.settings.containerBeforeInput ? 'before' : 'after') + ' ' + me.settings.containerClassExtra);
 
     // add the injector buttons to the container
     me.settings.items.forEach(txt => {
