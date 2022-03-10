@@ -19,7 +19,7 @@ const Komohua = function (selector, options = {}) {
   // start off with some default settings
   me.defaults = {
     containerClass: 'komohua-container', // string: the (one) class for the container
-    containerClassExtra: '', // string: an extra classes for the container
+    containerClassExtra: '', // string: any extra classes for the container
     containerBeforeInput: false, // bool: put the container before the input? before if true, after if not true
     containerTag: 'span', // string: HTML tag name used as the container
     helpers: [], // array: additional buttons as definable helper functions [{label:…,tooltip:…,action:fn()},…]
@@ -28,7 +28,9 @@ const Komohua = function (selector, options = {}) {
     injectorCallbackBefore: (input, text) => true, // function: callback before a pressed injector button does its thing. return false to prevent the injection or true to allow it
     injectorClass: 'komohua-injector', // string: the (one) class for injector buttons
     injectorClassExtra: '', // string: any extra classes for injector buttons
-    items: 'ʻĀĒĪŌŪāēīōū'.split('') // array: text items to inject
+    items: 'ʻĀĒĪŌŪāēīōū'.split(''), // array: text items to inject
+    skipAhead: null, // optional object with text: text of the skip ahead button and classes: classes of the button
+    skipBehind: null // optional object with text: text of the skip behind button and classes: classes of the button
   };
 
   // merge the user's settings into the defaults
@@ -82,6 +84,15 @@ const Komohua = function (selector, options = {}) {
     let container = document.createElement(me.settings.containerTag);
     container.setAttribute('class', me.settings.containerClass + ' ' + (me.settings.containerBeforeInput ? 'before' : 'after') + ' ' + me.settings.containerClassExtra);
 
+    // add skip ahead link
+    if (me.settings.skipAhead) {
+      let skip = document.createElement('button');
+      skip.textContent = me.settings.skipAhead.text || 'skip ahead';
+      skip.setAttribute('class', `skip-komohua-injector ${me.settings.skipAhead.classes || me.settings.injectorClass}`);
+      skip.addEventListener('click', () => me.findNextTabStop(container.childNodes[container.childNodes.length - 1]).focus());
+      container.append(skip);
+    }
+
     // add the injector buttons to the container
     me.settings.items.forEach(txt => {
       container.append(buildInjector(txt, (me.settings.injectorClass + ' ' + me.settings.injectorClassExtra).trim()));
@@ -103,12 +114,21 @@ const Komohua = function (selector, options = {}) {
       });
     }
 
+    // add skip behind link
+    if (me.settings.skipBehind) {
+      let skip = document.createElement('button');
+      skip.textContent = me.settings.skipBehind.text || 'skip back';
+      skip.setAttribute('class', `skip-komohua-injector ${me.settings.skipBehind.classes || me.settings.injectorClass}`);
+      skip.addEventListener('click', () => me.findPreviousTabStop(container.childNodes[0]).focus());
+      container.append(skip);
+    }
+
     // add the container to the DOM
     el.parentNode.insertBefore(container, me.settings.containerBeforeInput ? el : el.nextSibling);
 
     // add the injector event handler delegation to the container
     container.addEventListener('click', ev => {
-      if (ev.target.classList.contains(me.settings.injectorClass)) {
+      if (ev.target.classList.contains(me.settings.injectorClass) && !ev.target.classList.contains('skip-komohua-injector')) {
         ev.preventDefault();
         if (!me.settings.injectorCallbackBefore || (typeof me.settings.injectorCallbackBefore === "function" && me.settings.injectorCallbackBefore(el, ev.target.textContent))) {
           me.injectText(el, ev.target.textContent);
@@ -157,4 +177,20 @@ Komohua.prototype.replaceText = function (el, regexp_match, replacement) {
   el.selectionStart = start + replaced.length;
   el.selectionEnd = el.selectionStart;
   el.focus();
+};
+
+// find the next tab stop after an element
+Komohua.prototype.findNextTabStop = function (el) {
+  const universe = document.querySelectorAll('input, button, select, textarea, a[href]');
+  const list = Array.prototype.filter.call(universe, item => item.tabIndex >= '0');
+  const index = list.indexOf(el);
+  return list[index + 1] || list[0];
+};
+
+// find the previous tab stop before an element
+Komohua.prototype.findPreviousTabStop = function (el) {
+  const universe = document.querySelectorAll('input, button, select, textarea, a[href]');
+  const list = Array.prototype.filter.call(universe, item => item.tabIndex >= '0');
+  const index = list.indexOf(el);
+  return list[index - 1] || list[list.length - 1];
 };

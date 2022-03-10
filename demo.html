@@ -5,8 +5,7 @@
     <title>Komohua JS</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+    <!--[if lt IE 9]><script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
     <style>
         /* page styling for the demo--not needed for the plugin */
         *, *:after, *:before { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
@@ -16,21 +15,30 @@
         header p { margin-top: 0; padding-top: 0; font-style: italic; }
         .container > div { max-width: 40em; margin: 0 auto; }
         main { margin-bottom: 2em; }
+        a[href]:focus, button:focus, input:focus, textarea:focus { outline: solid currentColor; }
+        a[href]:focus { text-decoration: none; }
         h2 { border: 1px solid #444; border-width: 1px 0; margin: 3em 0 1em 0; padding: 0.5em 0; text-align: center; font-family: sans-serif; }
         label { font-family: sans-serif; }
         input, textarea { font-family: inherit; font-size: inherit; }
         textarea { width: 100%; }
         .notice { color: #f63; font-size: 1.3em; }
         .info { font-size: 1.2em; }
-        pre, code { font-family: Menlo, Consolas, monospace; background-color: white; border: 1px solid #ccc; padding: 0.5rem; border-radius: 3px; white-space: pre-wrap; }
+        pre, code { font-family: Menlo, Consolas, monospace; background-color: white; border: 1px solid #0003; padding: 0.5rem; border-radius: 3px; white-space: pre-wrap; }
         code { padding: 0 0.25rem; }
-        table { border-collapse: collapse; border: 1px solid #ccc; }
-        th, td { border: 1px solid #eee; padding: 5px; }
-        th { background-color: #eee; }
+        table { background-color: #fff; border-collapse: collapse; border: 1px solid #0003; margin-left: 1rem; margin-right: 1rem; }
+        th, td { border: 1px solid #0003; padding: 5px; }
+        th { background-color: #0003; }
+        tbody tr:nth-child(odd) { background-color: #0001; }
         img { max-width: 100%; height: auto; }
         @media screen and (max-width: 30em) {
             .container > div { padding-left: 4px; padding-right: 4px; }
         }
+
+        /* Hide only visually, but have it available for screenreaders: h5bp.com/v */
+        .visuallyhidden:not(.focusable:active):not(.focusable:focus) { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
+
+        /* Extends the .visuallyhidden class to allow the element to be focusable when navigated to via the keyboard: h5bp.com/p */
+        /*.visuallyhidden.focusable:active, .visuallyhidden.focusable:focus { clip: auto; height: auto; margin: 0; overflow: visible; position: static; width: auto; }*/
 
         /* sample styling for the plugin's elements -- modify to your taste */
         .komohua-container.before {
@@ -139,10 +147,26 @@
             </p>
         </div>
 
+        <div class="demo5">
+            <h2>Skip buttons</h2>
+            <p>Buttons can be added to allow tab-based keyboard control to skip after and/or behind injector buttons to improve the keyboard navigation experience. These work well when paired with the <a href="https://davidwalsh.name/html5-boilerplate">HTML5 Boilerplate <code>.visuallyhidden.focusable</code> class</a> or the <a href="https://getbootstrap.com/docs/5.1/helpers/visually-hidden/">Bootstrap 5 <code>.visually-hidden-focusable</code> class</a>.</p>
+            <p>The setting for <code>injectorClass</code> can also be used (and is, by default) for the <code>skipAhead.classes</code> and <code>skipBehind.classes</code> settings for consistent styling, as seen in the code for this demo.</p>
+            <p>Use <kbd>Tab</kbd> and <kbd>Shift</kbd>+<kbd>Tab</kbd> to navigate around the following inputs and injectors.</p>
+            <p>
+                <label for="skip-input-1">Skip buttons input 1:</label>
+                <textarea id="skip-input-1" rows="3" autocorrect="off"></textarea>
+            </p>
+            <p>
+                <label for="skip-input-2">Skip buttons input 2:</label>
+                <textarea id="skip-input-2" rows="3" autocorrect="off"></textarea>
+            </p>
+        </div>
+
 
         <h2>Options</h2>
         <p>In the following options, the <strong>container</strong> refers to the element which holds all of the
             injector and helper buttons.</p>
+    </div>
         <table>
             <thead>
             <tr>
@@ -158,6 +182,12 @@
                 <td>string</td>
                 <td>'injectors'</td>
                 <td>The (single) class for each injectors container</td>
+            </tr>
+            <tr>
+                <td><code>containerClassExtra</code></td>
+                <td>string</td>
+                <td>''</td>
+                <td>Any additional classes for each injectors container</td>
             </tr>
             <tr>
                 <td><code>containerBeforeInput</code></td>
@@ -184,10 +214,28 @@
                 <td>Add this (single) class to each helper button.</td>
             </tr>
             <tr>
+                <td><code>injectorCallbackAfter</code></td>
+                <td>function</td>
+                <td>(input, text) =&gt; {}</td>
+                <td>Callback after an inject button is pressed.</td>
+            </tr>
+            <tr>
+                <td><code>injectorCallbackBefore</code></td>
+                <td>function</td>
+                <td>(input, text) =&gt; true;</td>
+                <td>Callback before a pressed injector button does its thing. Return false to prevent the injection or true to allow it.</td>
+            </tr>
+            <tr>
                 <td><code>injectorClass</code></td>
                 <td>string</td>
                 <td>'inject'</td>
                 <td>Add this (single) class to each injector button.</td>
+            </tr>
+            <tr>
+                <td><code>injectorClassExtra</code></td>
+                <td>string</td>
+                <td>''</td>
+                <td>Any additional classes to each injector button.</td>
             </tr>
             <tr>
                 <td><code>items</code></td>
@@ -195,8 +243,28 @@
                 <td>['ʻ', 'Ā', 'Ē', 'Ī', 'Ō', 'Ū', 'ā', 'ē', 'ī', 'ō', 'ū']</td>
                 <td>Text for each item to be injected. Items may be more than a single character.</td>
             </tr>
+            <tr>
+                <td><code>skipAhead</code></td>
+                <td>object</td>
+                <td>null</td>
+                <td>Optional object with the following structure: <pre>{
+  text: "text of the skip ahead button",
+  classes: "classes of the button"
+}</td>
+            </tr>
+            <tr>
+                <td><code>skipBehind</code></td>
+                <td>object</td>
+                <td>null</td>
+                <td>Optional object with the following structure: <pre>{
+  text: "text of the skip behind button",
+  classes: "classes of the button"
+}</td>
+            </tr>
             </tbody>
         </table>
+
+    <div class="container">
 
         <h2 id="helpers">Making Your Own Helpers</h2>
         <p>Each helper must be an object with three properties:</p>
@@ -259,6 +327,22 @@
         ev.preventDefault();
         demo4.remove(); // call the remove method on the demo4 instance
         ev.target.remove(); // remove the remover button
+    });
+
+    // demo 5
+    const demo5a = new Komohua('#skip-input-1', {
+        skipAhead: {text: 'Skip past'},
+        skipBehind: {text: 'Skip behind'}
+    });
+    const demo5b = new Komohua('#skip-input-2', {
+        skipAhead: {
+            classes: 'visuallyhidden focusable komohua-injector', // includes komohua-injector since setting is overridden
+            text: 'Skip past'
+        },
+        skipBehind: {
+            classes: 'visuallyhidden focusable komohua-injector', // includes komohua-injector since setting is overridden
+            text: 'Skip behind'
+        }
     });
 </script>
 </body>
