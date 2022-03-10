@@ -87,6 +87,7 @@ const Komohua = function (selector, options = {}) {
     // add skip ahead link
     if (me.settings.skipAhead) {
       let skip = document.createElement('button');
+      skip.type = 'button';
       skip.textContent = me.settings.skipAhead.text || 'skip ahead';
       skip.setAttribute('class', `skip-komohua-injector ${me.settings.skipAhead.classes || me.settings.injectorClass}`);
       skip.addEventListener('click', () => me.findNextTabStop(container.childNodes[container.childNodes.length - 1]).focus());
@@ -117,6 +118,7 @@ const Komohua = function (selector, options = {}) {
     // add skip behind link
     if (me.settings.skipBehind) {
       let skip = document.createElement('button');
+      skip.type = 'button';
       skip.textContent = me.settings.skipBehind.text || 'skip back';
       skip.setAttribute('class', `skip-komohua-injector ${me.settings.skipBehind.classes || me.settings.injectorClass}`);
       skip.addEventListener('click', () => me.findPreviousTabStop(container.childNodes[0]).focus());
