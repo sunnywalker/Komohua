@@ -6,7 +6,7 @@ const KomohuaConvertToOkina = {
   label: 'Convert to ʻokina',
   tooltip: 'Convert tick, backtick, and left single quote characters to the ʻokina in the selected text (or all if nothing is selected)',
   action: function (instance, input, button) {
-    instance.replaceText(input, /`|'|‘|’/g, 'ʻ');
+    instance.replaceText(input, /[`'‘’]/g, 'ʻ');
   }
 };
 
@@ -19,6 +19,7 @@ const Komohua = function (selector, options = {}) {
 
   // start off with some default settings
   me.defaults = {
+    container: null, // HTMLElement: the container element where the inputs will be injected; it will be built if not provided
     containerClass: 'komohua-container', // string: the (one) class for the container
     containerClassExtra: '', // string: any extra classes for the container
     containerBeforeInput: false, // bool: put the container before the input? before if true, after if not true
@@ -80,9 +81,16 @@ const Komohua = function (selector, options = {}) {
       return;
     }
 
-    // build the container
-    let container = document.createElement(me.settings.containerTag);
-    container.setAttribute('class', me.settings.containerClass + ' ' + (me.settings.containerBeforeInput ? 'before' : 'after') + ' ' + me.settings.containerClassExtra);
+    // build the container if one wasn't provided
+    let container_existed = me.settings.container && me.settings.container.nodeType === Node.ELEMENT_NODE;
+    if (typeof me.settings.container === 'string') {
+      me.settings.container = document.querySelector(me.settings.container);
+      container_existed = true;
+    }
+    if (!me.settings.container || !(me.settings.container instanceof Node) || me.settings.container.nodeType !== Node.ELEMENT_NODE) {
+      me.settings.container = document.createElement(me.settings.containerTag);
+      me.settings.container.setAttribute('class', me.settings.containerClass + ' ' + (me.settings.containerBeforeInput ? 'before' : 'after') + ' ' + me.settings.containerClassExtra);
+    }
 
     // add skip ahead link
     if (me.settings.skipAhead) {
@@ -90,20 +98,20 @@ const Komohua = function (selector, options = {}) {
       skip.type = 'button';
       skip.textContent = me.settings.skipAhead.text || 'skip ahead';
       skip.setAttribute('class', `${me.skip_class} ${me.settings.skipAhead.classes || me.settings.injectorClass}`);
-      skip.addEventListener('click', () => me.findNextTabStop(container.childNodes[container.childNodes.length - 1]).focus());
-      container.append(skip);
+      skip.addEventListener('click', () => me.findNextTabStop(me.settings.container.childNodes[me.settings.container.childNodes.length - 1]).focus());
+      me.settings.container.append(skip);
     }
 
     // add the injector buttons to the container
     me.settings.items.forEach(txt => {
-      container.append(buildInjector(txt, (me.settings.injectorClass + ' ' + me.settings.injectorClassExtra).trim()));
+      me.settings.container.append(buildInjector(txt, (me.settings.injectorClass + ' ' + me.settings.injectorClassExtra).trim()));
     });
 
     // add any helpers to the container
     if (me.settings.helpers instanceof Array) {
       me.settings.helpers.forEach(helper => {
         // build the helper button
-        const h = buildInjector(helper.label, me.settings.helpersClass);
+        const h = buildInjector(helper.label, (me.settings.helpersClass + ' ' + (helper.classes || '')).trim());
         h.setAttribute('title', helper.tooltip);
         // add the helper event listener
         h.addEventListener('click', ev => {
@@ -111,7 +119,7 @@ const Komohua = function (selector, options = {}) {
           helper.action(me, el, ev.target);
         });
         // add the helper button to the container
-        container.append(h);
+        me.settings.container.append(h);
       });
     }
 
@@ -121,15 +129,17 @@ const Komohua = function (selector, options = {}) {
       skip.type = 'button';
       skip.textContent = me.settings.skipBehind.text || 'skip back';
       skip.setAttribute('class', `${me.skip_class} ${me.settings.skipBehind.classes || me.settings.injectorClass}`);
-      skip.addEventListener('click', () => me.findPreviousTabStop(container.childNodes[0]).focus());
-      container.append(skip);
+      skip.addEventListener('click', () => me.findPreviousTabStop(me.settings.container.childNodes[0]).focus());
+      me.settings.container.append(skip);
     }
 
-    // add the container to the DOM
-    el.parentNode.insertBefore(container, me.settings.containerBeforeInput ? el : el.nextSibling);
+    // add the container to the DOM if it didn't already exist
+    if (!container_existed) {
+      el.parentNode.insertBefore(me.settings.container, me.settings.containerBeforeInput ? el : el.nextSibling);
+    }
 
     // add the injector event handler delegation to the container
-    container.addEventListener('click', ev => {
+    me.settings.container.addEventListener('click', ev => {
       if (ev.target.classList.contains(me.settings.injectorClass) && !ev.target.classList.contains(me.skip_class)) {
         ev.preventDefault();
         if (!me.settings.injectorCallbackBefore || (typeof me.settings.injectorCallbackBefore === "function" && me.settings.injectorCallbackBefore(el, ev.target.textContent))) {
@@ -144,7 +154,7 @@ const Komohua = function (selector, options = {}) {
     // add the input and container to the known list
     el.classList.add(me.footprint);
     me.inputs.push(el);
-    me.containers.push(container);
+    me.containers.push(me.settings.container);
   });
 };
 
@@ -159,7 +169,7 @@ Komohua.prototype.injectText = function (el, text) {
   el.focus();
 };
 
-// remove the functionality and buttons from all of the inputs in this instance
+// remove the functionality and buttons from all the inputs in this instance
 Komohua.prototype.remove = function () {
   this.containers.forEach(el => el.remove());
   this.inputs.forEach(el => el.classList && el.classList.remove(this.footprint));
