@@ -4,7 +4,7 @@
 
 *Komohua* is vanilla JavaScript which adds Hawaiian character injectors to HTML input and textareas, along with optional helper functions. **Note that many fonts do not support the full range of Hawaiian letters, particularly the ʻokina.**
 
-**Demo:** [Komohua Demo](https://hilo.hawaii.edu/js/Komohua/demo.html)
+**Demos:** [Komohua Demo](https://hilo.hawaii.edu/js/Komohua/demo.html), [Komohua Web Component Demo](https://hilo.hawaii.edu/js/Komohua/web-component-demo.html)
 
 ![animated demo](http://i.imgur.com/PBWLEYG.gif)
 
